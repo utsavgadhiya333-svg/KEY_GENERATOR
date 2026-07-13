@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>Admin Dashboard</h1>
+<div id="stats">
+<h3>Total Keys: 0</h3>
+<h3>Active Keys: 0</h3>
+<h3>Unused Keys: 0</h3>
+<h3>Expired Keys: 0</h3>
+</div>
+<input 
+id="search"
+placeholder="Search Key..."
+onkeyup="searchKeys()">
+<button onclick="loadKeys()">Refresh Keys</button>
+
+<div id="keys"></div>
+
+</div>
+
+
+
+<script>
+if(localStorage.getItem("adminLogin") !== "true"){
+    window.location.href = "login.html";
+}
+async function loadKeys(){
+
+    let response = await fetch("http://localhost:3000/all-keys");
+
+    let data = await response.json();
+let total = data.keys.length;
+let active = data.keys.filter(k => k.status === "active").length;
+let unused = data.keys.filter(k => k.status === "unused").length;
+
+let expired = data.keys.filter(k => 
+    new Date(k.expires_at) < new Date()
+).length;
+
+
+document.getElementById("stats").innerHTML = `
+<h3>Total Keys: ${total}</h3>
+<h3>Active Keys: ${active}</h3>
+<h3>Unused Keys: ${unused}</h3>
+<h3>Expired Keys: ${expired}</h3>
+`;
+
+
+    let html = "";
+
+
+    data.keys.forEach(k => {
+
+        html += `
+        <hr>
+        <p><b>Key:</b> ${k.key}</p>
+        <p><b>Plan:</b> ${k.plan}</p>
+        <p><b>Status:</b> ${k.status}</p>
+        <p><b>Device:</b> ${k.device_id || "Not Used"}</p>
+        <p><b>Expire:</b> ${k.expires_at}</p>
+<button onclick="disableKey('${k.key}')">
+❌ Disable Key
+</button>
+        `;
+
+    });
+
+
+    document.getElementById("keys").innerHTML = html;
+
+}
+function searchKeys(){
+
+    let text = document.getElementById("search").value.toUpperCase();
+
+    let items = document.querySelectorAll("#keys p");
+
+    items.forEach(item => {
+
+        if(item.innerText.toUpperCase().includes(text)){
+            item.style.display = "block";
+        }else{
+            item.style.display = "none";
+        }
+
+    });
+
+}
+async function disableKey(key){
+
+    let response = await fetch("http://localhost:3000/disable-key",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            key:key
+        })
+    });
+
+
+    let data = await response.json();
+
+    alert(data.message);
+
+    loadKeys();
+
+}
+loadKeys();
+
+</script>
+
+</body>
+</html>

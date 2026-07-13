@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>UTSAV Key System</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    display:flex;
+    background:#0f172a;
+    color:white;
+}
+style="display:none;"
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:#111827;
+    padding:20px;
+}
+
+.sidebar h2{
+    text-align:center;
+}
+
+.sidebar button{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#2563eb;
+    color:white;
+}
+style="display:none;"
+.content{
+    flex:1;
+    padding:30px;
+}
+
+.section{
+    display:none;
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+}
+
+.active{
+    display:block;
+}
+</style>
+
+</head>
+<div id="loginBox" style="text-align:center; padding:50px;">
+
+<h1>🔐 Admin Login</h1>
+
+<input id="adminUser" placeholder="Username">
+
+<br><br>
+
+<input id="adminPass" type="password" placeholder="Password">
+
+<br><br>
+
+<button onclick="adminLogin()">
+Login
+</button>
+
+<p id="loginMsg"></p>
+
+</div>
+
+<body>
+
+<div class="sidebar">
+
+<h2>UTSAV</h2>
+
+<button onclick="show('generate')">
+🔑 Key Generate
+</button>
+
+<button onclick="show('info')">
+📋 Key Information
+</button>
+
+<button onclick="show('activate')">
+🔐 Activation
+</button>
+
+<button onclick="show('admin')">
+👤 Admin
+</button>
+
+</div>
+
+
+<div id="generate" class="section active">
+
+<h1>🔑 Key Generate</h1>
+
+<select id="plan">
+<option>1 Day</option>
+<option>7 Days</option>
+<option>15 Days</option>
+<option>Permanent</option>
+</select>
+
+<br><br>
+
+<button onclick="generateKey()">
+Generate Key
+</button>
+
+<h3 id="newKey"></h3>
+<button onclick="copyNewKey()">
+📋 Copy Key
+</button>
+
+</div>
+
+
+<div id="info" class="section">
+
+<h1>📋 Key Information</h1>
+
+<button onclick="loadKeys()">
+Refresh Keys
+</button>
+
+<div id="keyList"></div>
+
+</div>
+
+<div id="activate" class="section">
+
+<h1>🔐 Activate Key</h1>
+
+<input id="activeKey" placeholder="Enter Key">
+
+<br><br>
+
+<input id="deviceId" placeholder="Enter Device ID">
+
+<br><br>
+
+<button onclick="activateKey()">
+Activate
+</button>
+
+<h3 id="activateMsg"></h3>
+
+</div>
+
+<div id="admin" class="section">
+
+<h1>👤 Admin Panel</h1>
+
+<div id="stats">
+Loading...
+</div>
+
+<br>
+
+<button onclick="loadStats()">
+Refresh Stats
+</button>
+
+</div>
+</div>
+
+
+<script>
+loadStats();
+function adminLogin(){
+
+    let user = document.getElementById("adminUser").value;
+    let pass = document.getElementById("adminPass").value;
+
+
+    if(user === "ugtm" && pass === "98751"){
+
+        localStorage.setItem("adminLogin","true");
+
+        document.getElementById("loginBox").style.display="none";
+
+        document.querySelector(".sidebar").style.display="block";
+
+        document.querySelector(".content").style.display="block";
+
+    }else{
+
+        document.getElementById("loginMsg").innerHTML =
+        "Wrong Username or Password";
+
+    }
+
+}
+function show(id){
+
+    let sections=document.querySelectorAll(".section");
+
+    sections.forEach(s=>{
+        s.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+
+}
+async function generateKey(){
+
+    let plan = document.getElementById("plan").value;
+
+    let response = await fetch("http://localhost:3000/generate-key",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            plan:plan
+        })
+    });
+
+
+    let data = await response.json();
+
+
+    if(data.success){
+
+        document.getElementById("newKey").innerHTML =
+        "Generated Key: " + data.key;
+
+    }else{
+
+        alert("Key Generate Error");
+
+    }
+
+}
+function copyNewKey(){
+
+    let key = document.getElementById("newKey").innerText;
+
+    if(key === ""){
+        alert("પહેલા Key Generate કરો.");
+        return;
+    }
+
+    navigator.clipboard.writeText(
+        key.replace("Generated Key: ","")
+    );
+
+    alert("Key Copy થઈ ગઈ!");
+}
+async function loadKeys(){
+
+    let response = await fetch("http://localhost:3000/all-keys");
+
+    let data = await response.json();
+
+    let html = "";
+
+
+    data.keys.forEach(k => {
+
+        html += `
+        <hr>
+        <p><b>Key:</b> ${k.key}</p>
+        <p><b>Plan:</b> ${k.plan}</p>
+        <p><b>Status:</b> ${k.status}</p>
+        <p><b>Device:</b> ${k.device_id || "Not Used"}</p>
+        <p><b>Expiry:</b> ${k.expires_at}</p>
+<button onclick="deleteKey('${k.key}')">
+🗑️ Delete Key
+</button>
+        `;
+
+    });
+
+
+    document.getElementById("keyList").innerHTML = html;
+
+}
+async function activateKey(){
+
+    let key = document.getElementById("activeKey").value;
+    let device = document.getElementById("deviceId").value;
+
+
+    let response = await fetch("http://localhost:3000/activate-key",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            key:key,
+            device_id:device
+        })
+
+    });
+
+
+    let data = await response.json();
+
+
+    document.getElementById("activateMsg").innerHTML = data.message;
+
+}
+async function loadStats(){
+
+    let response = await fetch("http://localhost:3000/all-keys");
+
+    let data = await response.json();
+
+
+    let total = data.keys.length;
+
+    let active = data.keys.filter(
+        k => k.status === "active"
+    ).length;
+
+
+    let unused = data.keys.filter(
+        k => k.status === "unused"
+    ).length;
+
+
+    let disabled = data.keys.filter(
+        k => k.status === "disabled"
+    ).length;
+
+
+    document.getElementById("stats").innerHTML = `
+
+    <h3>Total Keys: ${total}</h3>
+
+    <h3>Active Keys: ${active}</h3>
+
+    <h3>Unused Keys: ${unused}</h3>
+
+    <h3>Disabled Keys: ${disabled}</h3>
+
+    `;
+
+}
+async function deleteKey(key){
+
+    let response = await fetch("http://localhost:3000/delete-key",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            key:key
+        })
+
+    });
+
+
+    let data = await response.json();
+
+    alert(data.message);
+
+    loadKeys();
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Activate Key</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>Activate Key</h1>
+
+<input id="key" placeholder="Enter Key">
+
+<br><br>
+
+<input id="device" placeholder="Device ID">
+
+<br><br>
+
+<button onclick="activateKey()">Activate</button>
+
+<p id="msg"></p>
+
+</div>
+
+
+<script>
+
+async function activateKey(){
+
+    let key = document.getElementById("key").value;
+    let device = document.getElementById("device").value;
+
+
+    let response = await fetch("http://localhost:3000/activate-key",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            key:key,
+            device_id:device
+        })
+
+    });
+
+
+    let data = await response.json();
+
+
+    document.getElementById("msg").innerHTML = data.message;
+
+}
+
+</script>
+
+</body>
+</html>

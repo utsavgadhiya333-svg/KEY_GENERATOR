@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="style.css">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Generator</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
+}
+
+.box{
+    background:rgba(255,255,255,0.1);
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    backdrop-filter:blur(10px);
+    color:white;
+    width:350px;
+    box-shadow:0 0 20px rgba(255,255,255,0.2);
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+select,button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+}
+
+button{
+    background:#00c853;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#00a844;
+}
+
+#key{
+    margin-top:20px;
+    font-size:18px;
+    font-weight:bold;
+    word-break:break-all;
+}
+</style>
+
+</head>
+<body>
+
+<div class="box">
+    <h1>Key Generator</h1>
+
+    <select id="plan">
+        <option>1 Day</option>
+        <option>7 Days</option>
+        <option>15 Days</option>
+        <option>Permanent</option>
+    </select>
+
+    <button onclick="generateKey()">Generate Key</button>
+
+<div id="key"></div>
+
+<button onclick="copyKey()" id="copyBtn">
+    📋 Copy Key
+</button>
+</div>
+
+<script>
+function copyKey() {
+    let key = document.getElementById("key").innerText;
+
+    if(key == ""){
+        alert("પહેલા Key Generate કરો.");
+        return;
+    }
+
+    navigator.clipboard.writeText(key);
+
+    alert("Key Copy થઈ ગઈ!");
+}
+function randomString(length){
+    let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result="";
+    for(let i=0;i<length;i++){
+        result+=chars.charAt(Math.floor(Math.random()*chars.length));
+    }
+    return result;
+}
+
+async function generateKey() {
+
+    const plan = document.getElementById("plan").value;
+
+    const response = await fetch("http://localhost:3000/generate-key", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            plan: plan
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        document.getElementById("key").innerHTML = data.key;
+    } else {
+        alert("Key Generate કરવામાં Error આવ્યો.");
+    }
+}
+</script>
+<script src="script.js"></script>
+</body>
+</html>
