@@ -2,23 +2,31 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<!-- 👈 આ લાઇનથી વેબસાઇટ ફોનની સ્ક્રીન સાઇઝ પ્રમાણે આપમેળે સેટ થઈ જશે -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>UTSAV Key System</title>
 
 <style>
-body {
+html, body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    /* 👈 આનાથી સ્ક્રીન આજુબાજુ હલશે નહીં (No Horizontal Scroll) */
+    overflow-x: hidden; 
     font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: row; /* કમ્પ્યુટરમાં આજુબાજુ દેખાશે */
     background: #0f172a;
     color: white;
+}
+
+body {
+    display: flex;
+    flex-direction: row;
     min-height: 100vh;
 }
 
+/* સાઇડબાર કમ્પ્યુટર માટે */
 .sidebar {
-    width: 220px;
+    width: 240px;
+    min-width: 240px;
     background: #111827;
     padding: 20px;
     box-sizing: border-box;
@@ -26,6 +34,7 @@ body {
 
 .sidebar h2 {
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .sidebar button {
@@ -38,64 +47,105 @@ body {
     background: #2563eb;
     color: white;
     font-size: 14px;
+    font-weight: bold;
 }
 
+/* કન્ટેન્ટ એરિયા */
 .content {
     flex: 1;
-    padding: 20px;
+    padding: 30px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .section {
     display: none;
     background: #1e293b;
-    padding: 20px;
+    padding: 25px;
     border-radius: 12px;
-    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .active {
     display: block;
 }
 
+/* ઇનપુટ અને સિલેક્ટ બોક્સ */
 input, select {
     width: 100%;
-    max-width: 300px;
-    padding: 10px;
+    max-width: 350px;
+    padding: 12px;
     border-radius: 6px;
     border: 1px solid #475569;
     background: #334155;
     color: white;
     box-sizing: border-box;
+    font-size: 14px;
 }
 
 button.action-btn {
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
     border-radius: 6px;
     background: #10b981;
     color: white;
     cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
 }
 
-/* 👈 જો ફોનની સ્ક્રીન નાની (768px થી ઓછી) હોય તો આ CSS ચાલુ થશે */
+/* લોગિન બોક્સ */
+#loginBox {
+    width: 100%;
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 30px;
+    background: #1e293b;
+    border-radius: 12px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* 📱 ખાસ ફોન માટેનું CSS (Responsive) */
 @media (max-width: 768px) {
     body {
         flex-direction: column; /* ફોનમાં સાઇડબાર ઉપર અને કન્ટેન્ટ નીચે આવશે */
     }
+    
     .sidebar {
         width: 100%;
+        min-width: 100%;
         height: auto;
         padding: 15px;
+        box-sizing: border-box;
     }
+    
+    .sidebar h2 {
+        margin-bottom: 10px;
+    }
+    
     .sidebar button {
-        margin: 4px 0;
+        margin: 5px 0;
+        padding: 10px;
     }
+    
     .content {
         padding: 15px;
+        width: 100%;
     }
+    
+    .section {
+        padding: 15px;
+    }
+    
     input, select {
-        max-width: 100%; /* ફોનમાં ઇનપુટ બોક્સ આખી સ્ક્રીન જેટલા મોટા થઈ જશે */
+        max-width: 100%; /* ફોનમાં પૂરેપૂરી સ્ક્રીન સાઇઝમાં સેટ થઈ જશે */
+    }
+    
+    #loginBox {
+        margin: 40px auto;
+        width: 90%; /* ફોનની સ્ક્રીનથી થોડું નાનું કમ્પ્લેટ ફિટ બેસશે */
     }
 }
 </style>
@@ -103,7 +153,8 @@ button.action-btn {
 
 <body>
 
-<div id="loginBox" style="text-align:center; padding:50px; width: 100%; box-sizing: border-box;">
+<!-- લોગિન બોક્સ સેન્ટરમાં દેખાશે -->
+<div id="loginBox">
     <h1>🔐 Admin Login</h1>
     <input id="adminUser" placeholder="Username"><br><br>
     <input id="adminPass" type="password" placeholder="Password"><br><br>
@@ -111,6 +162,7 @@ button.action-btn {
     <p id="loginMsg"></p>
 </div>
 
+<!-- સાઇડબાર મેનુ -->
 <div class="sidebar" style="display:none;">
     <h2>UTSAV</h2>
     <button onclick="show('generate')">🔑 Key Generate</button>
@@ -119,6 +171,7 @@ button.action-btn {
     <button onclick="show('admin')">👤 Admin</button>
 </div>
 
+<!-- કન્ટેન્ટ સેકશન -->
 <div class="content" style="display:none;">
     <div id="generate" class="section active">
         <h1>🔑 Key Generate</h1>
