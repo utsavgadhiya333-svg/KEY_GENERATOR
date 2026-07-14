@@ -6,12 +6,16 @@
 <title>UTSAV Key System</title>
 
 <style>
+* {
+    box-sizing: border-box;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    /* 👈 આનાથી સ્ક્રીન આજુબાજુ હલશે નહીં (No Horizontal Scroll) */
-    overflow-x: hidden; 
+    height: 100%;
+    overflow-x: hidden;
     font-family: Arial, sans-serif;
     background: #0f172a;
     color: white;
@@ -20,16 +24,14 @@ html, body {
 body {
     display: flex;
     flex-direction: row;
-    min-height: 100vh;
 }
 
-/* સાઇડબાર કમ્પ્યુટર માટે */
+/* 💻 કમ્પ્યુટર માટે સાઇડબાર */
 .sidebar {
     width: 240px;
     min-width: 240px;
     background: #111827;
     padding: 20px;
-    box-sizing: border-box;
 }
 
 .sidebar h2 {
@@ -54,7 +56,6 @@ body {
 .content {
     flex: 1;
     padding: 30px;
-    box-sizing: border-box;
     width: 100%;
 }
 
@@ -64,14 +65,12 @@ body {
     padding: 25px;
     border-radius: 12px;
     width: 100%;
-    box-sizing: border-box;
 }
 
 .active {
     display: block;
 }
 
-/* ઇનપુટ અને સિલેક્ટ બોક્સ */
 input, select {
     width: 100%;
     max-width: 350px;
@@ -80,12 +79,15 @@ input, select {
     border: 1px solid #475569;
     background: #334155;
     color: white;
-    box-sizing: border-box;
     font-size: 14px;
+    display: block;
+    margin-bottom: 15px;
 }
 
 button.action-btn {
-    padding: 12px 24px;
+    width: 100%;
+    max-width: 350px;
+    padding: 12px;
     border: none;
     border-radius: 6px;
     background: #10b981;
@@ -95,22 +97,42 @@ button.action-btn {
     font-size: 14px;
 }
 
-/* લોગિન બોક્સ */
+/* 🔐 લોગિન કન્ટેનર: આખા પેજની વચ્ચે લાવવા માટે */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+}
+
 #loginBox {
     width: 100%;
-    max-width: 400px;
-    margin: 80px auto;
+    max-width: 360px;
     padding: 30px;
     background: #1e293b;
     border-radius: 12px;
     text-align: center;
-    box-sizing: border-box;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* 📱 ખાસ ફોન માટેનું CSS (Responsive) */
+#loginBox h1 {
+    margin-top: 0;
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+#loginBox input, #loginBox button {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 📱 ફોનની સ્ક્રીન માટે (Mobile Responsive) */
 @media (max-width: 768px) {
     body {
-        flex-direction: column; /* ફોનમાં સાઇડબાર ઉપર અને કન્ટેન્ટ નીચે આવશે */
+        flex-direction: column;
     }
     
     .sidebar {
@@ -118,7 +140,6 @@ button.action-btn {
         min-width: 100%;
         height: auto;
         padding: 15px;
-        box-sizing: border-box;
     }
     
     .sidebar h2 {
@@ -126,26 +147,24 @@ button.action-btn {
     }
     
     .sidebar button {
-        margin: 5px 0;
+        margin: 4px 0;
         padding: 10px;
     }
     
     .content {
         padding: 15px;
-        width: 100%;
     }
     
     .section {
         padding: 15px;
     }
     
-    input, select {
-        max-width: 100%; /* ફોનમાં પૂરેપૂરી સ્ક્રીન સાઇઝમાં સેટ થઈ જશે */
+    input, select, button.action-btn {
+        max-width: 100%;
     }
     
-    #loginBox {
-        margin: 40px auto;
-        width: 90%; /* ફોનની સ્ક્રીનથી થોડું નાનું કમ્પ્લેટ ફિટ બેસશે */
+    .login-container {
+        height: 100vh; /* લોગિન સ્ક્રીન ફોનમાં પણ બરાબર વચ્ચે જ રહેશે */
     }
 }
 </style>
@@ -153,16 +172,17 @@ button.action-btn {
 
 <body>
 
-<!-- લોગિન બોક્સ સેન્ટરમાં દેખાશે -->
-<div id="loginBox">
-    <h1>🔐 Admin Login</h1>
-    <input id="adminUser" placeholder="Username"><br><br>
-    <input id="adminPass" type="password" placeholder="Password"><br><br>
-    <button class="action-btn" onclick="adminLogin()">Login</button>
-    <p id="loginMsg"></p>
+<!-- લોગિન બોક્સને વચ્ચે સેટ કરવા માટે આ કન્ટેનર ઉમેર્યું -->
+<div class="login-container" id="loginWrapper">
+    <div id="loginBox">
+        <h1>🔐 Admin Login</h1>
+        <input id="adminUser" placeholder="Username">
+        <input id="adminPass" type="password" placeholder="Password">
+        <button class="action-btn" onclick="adminLogin()">Login</button>
+        <p id="loginMsg" style="margin-bottom: 0; color: #ef4444;"></p>
+    </div>
 </div>
 
-<!-- સાઇડબાર મેનુ -->
 <div class="sidebar" style="display:none;">
     <h2>UTSAV</h2>
     <button onclick="show('generate')">🔑 Key Generate</button>
@@ -171,7 +191,6 @@ button.action-btn {
     <button onclick="show('admin')">👤 Admin</button>
 </div>
 
-<!-- કન્ટેન્ટ સેકશન -->
 <div class="content" style="display:none;">
     <div id="generate" class="section active">
         <h1>🔑 Key Generate</h1>
@@ -181,7 +200,7 @@ button.action-btn {
             <option>15 Days</option>
             <option>Permanent</option>
         </select>
-        <br><br>
+        <br>
         <button class="action-btn" onclick="generateKey()">Generate Key</button>
         <h3 id="newKey"></h3>
         <button class="action-btn" style="background:#64748b;" onclick="copyNewKey()">📋 Copy Key</button>
@@ -195,8 +214,8 @@ button.action-btn {
 
     <div id="activate" class="section">
         <h1>🔐 Activate Key</h1>
-        <input id="activeKey" placeholder="Enter Key"><br><br>
-        <input id="deviceId" placeholder="Enter Device ID"><br><br>
+        <input id="activeKey" placeholder="Enter Key">
+        <input id="deviceId" placeholder="Enter Device ID">
         <button class="action-btn" onclick="activateKey()">Activate</button>
         <h3 id="activateMsg"></h3>
     </div>
@@ -218,7 +237,7 @@ function adminLogin(){
 
     if(user === "ugtm" && pass === "98751"){
         localStorage.setItem("adminLogin","true");
-        document.getElementById("loginBox").style.display="none";
+        document.getElementById("loginWrapper").style.display="none"; // આખા કન્ટેનરને હટાવશે
         document.querySelector(".sidebar").style.display="block";
         document.querySelector(".content").style.display="block";
     }else{
@@ -269,7 +288,7 @@ async function loadKeys(){
         <p><b>Status:</b> ${k.status}</p>
         <p><b>Device:</b> ${k.device_id || "Not Used"}</p>
         <p><b>Expiry:</b> ${k.expires_at}</p>
-        <button class="action-btn" style="background:#ef4444; padding:5px 10px; font-size:12px;" onclick="deleteKey('${k.key}')">🗑️ Delete Key</button>
+        <button class="action-btn" style="background:#ef4444; padding:5px 10px; font-size:12px; max-width: 120px;" onclick="deleteKey('${k.key}')">🗑️ Delete Key</button>
         `;
     });
     document.getElementById("keyList").innerHTML = html;
