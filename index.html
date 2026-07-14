@@ -15,7 +15,7 @@
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* આખા પેજનું સ્ક્રોલિંગ બંધ (Lock) કરવા માટે */
+    overflow: hidden; /* આખું પેજ લૉક રહેશે, હલશે નહીં */
     font-family: Arial, sans-serif;
     background: #0f172a;
     color: white;
@@ -26,7 +26,7 @@ body {
     flex-direction: row;
 }
 
-/* 🔐 લૉગિન બોક્સ: સ્ક્રીનની બરાબર વચ્ચે લૉક અને સ્થિર */
+/* 🔐 લૉગિન કન્ટેનર */
 .login-container {
     display: flex;
     align-items: center;
@@ -39,8 +39,7 @@ body {
     top: 0;
     left: 0;
     z-index: 9999;
-    overflow: hidden; /* લૉગિન વખતે પેજ સહેજ પણ હલશે નહીં */
-    touch-action: none; /* ટચ કરવાથી પણ પેજ ઉપર-નીચે નહીં થાય */
+    touch-action: none;
 }
 
 #loginBox {
@@ -93,7 +92,7 @@ body {
     background: #111827;
     padding: 20px;
     height: 100vh;
-    transition: transform 0.3s ease-in-out; /* બહાર આવવા અને અંદર જવાની સ્મૂધ ઇફેક્ટ */
+    transition: transform 0.3s ease-in-out;
 }
 
 .sidebar h2 {
@@ -125,7 +124,7 @@ body {
     flex: 1;
     padding: 30px;
     height: 100vh;
-    overflow-y: auto; /* ફક્ત કન્ટેન્ટ સેક્શન જ જરૂર પડે તો ઉપર-નીચે સ્ક્રોલ થશે */
+    overflow-y: auto;
     width: 100%;
 }
 
@@ -142,7 +141,7 @@ body {
     display: block;
 }
 
-/* ફોર્મ એલિમેન્ટ્સ */
+/* ਫੋਰਮ ਐਲੀਮੈਂਟਸ */
 input, select {
     width: 100%;
     max-width: 350px;
@@ -169,13 +168,13 @@ button.action-btn {
     font-size: 14px;
 }
 
-/* 📱 ખાસ મોબાઇલ સ્ક્રીન માટે ફિક્સિંગ (Responsive) */
+/* 📱 મોબાઇલ સ્ક્રીન માટે ફિક્સ રિસ્પોન્સિવ (Sidebar hidden by default) */
 @media (max-width: 768px) {
     .menu-toggle {
-        display: block; /* મોબાઇલમાં મેનુ બટન દેખાશે */
+        display: block;
     }
 
-    /* સાઇડબાર શરૂઆતમાં સ્ક્રીનની બહાર ડાબી બાજુ છુપાયેલો રહેશે */
+    /* મોબાઇલમાં સાઇડબાર ડિફોલ્ટ છુપાયેલો જ રહેશે (translateX -100%) */
     .sidebar {
         position: fixed;
         top: 0;
@@ -186,18 +185,18 @@ button.action-btn {
         box-shadow: 5px 0 15px rgba(0,0,0,0.5);
     }
 
-    /* જ્યારે મેનુ બટન દબાવો ત્યારે 'open' ક્લાસ ઉમેરાશે અને સાઇડબાર બહાર આવશે */
+    /* જ્યારે મેનુ ઓપન થાય ત્યારે જ બહાર આવશે */
     .sidebar.open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
     }
 
     .content {
         padding: 20px;
-        padding-top: 75px; /* મેનુ બટનની નીચેથી બરાબર જગ્યા આપવા માટે */
+        padding-top: 75px;
     }
 
     input, select, button.action-btn {
-        max-width: 100%; /* ફોનમાં કન્ટેન્ટ પૂરી સ્ક્રીન પર ફિટ થશે */
+        max-width: 100%;
     }
 }
 </style>
@@ -205,7 +204,7 @@ button.action-btn {
 
 <body>
 
-<!-- લોગિન સેક્શન (એકદમ લૉક રહેશે) -->
+<!-- લોગિન સેક્શન -->
 <div class="login-container" id="loginWrapper">
     <div id="loginBox">
         <h1>🔐 Admin Login</h1>
@@ -219,7 +218,7 @@ button.action-btn {
 <!-- મોબાઇલ મેનુ બટન (☰) -->
 <button class="menu-toggle" id="menuBtn" style="display:none;" onclick="toggleMenu()">☰ Menu</button>
 
-<!-- ડાબી બાજુનો સાઇડબાર -->
+<!-- ડાબી બાજુનો સાઇડબાર (મોબાઇલમાં શરૂઆતમાં બહાર નહીં આવે) -->
 <div class="sidebar" id="sidebar" style="display:none;">
     <h2>UTSAV</h2>
     <button onclick="navigate('generate')">🔑 Key Generate</button>
@@ -280,23 +279,25 @@ function adminLogin(){
         localStorage.setItem("adminLogin","true");
         document.getElementById("loginWrapper").style.display="none"; 
         
-        // લૉગિન સફળ થાય ત્યારે બધું કન્ટેન્ટ ડિસ્પ્લે કરાવો
+        // લોગિન થતાં જ બધું દેખાશે પણ સાઇડબાર ક્લાસ મુજબ છુપાયેલો રહેશે
         document.getElementById("menuBtn").style.display="block";
         document.getElementById("sidebar").style.display="block";
         document.getElementById("contentArea").style.display="block";
+        
+        // ખાતરી કરવા માટે મોબાઇલમાં ઓપન ક્લાસ દૂર રાખવો
+        document.getElementById("sidebar").classList.remove("open");
     }else{
         document.getElementById("loginMsg").innerHTML = "Wrong Username or Password";
     }
 }
 
-// મેનુ બટન દબાવવાથી સાઇડબાર બહાર આવશે/અંદર જશે
 function toggleMenu() {
     let sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("open");
 }
 
-// લિંક કે ઓપ્શન પર ક્લિક કરતા જ સાઇડબાર આપમેળે બંધ થઈ જશે
 function navigate(id) {
+    // કોઈ પણ ઓપ્શન દબાવતા જ મેનુ પાછું અંદર જતું રહેશે
     document.getElementById("sidebar").classList.remove("open");
     
     let sections = document.querySelectorAll(".section");
