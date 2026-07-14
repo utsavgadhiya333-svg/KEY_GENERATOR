@@ -15,7 +15,7 @@
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* આખું પેજ લૉક રહેશે, આડું-અવળું હલશે નહીં */
+    overflow: hidden; /* આખા પેજનું સ્ક્રોલિંગ બંધ (Lock) કરવા માટે */
     font-family: Arial, sans-serif;
     background: #0f172a;
     color: white;
@@ -26,7 +26,7 @@ body {
     flex-direction: row;
 }
 
-/* 🔐 લૉગિન કન્ટેનર: એકદમ સેન્ટર અને ફિક્સ લૉક */
+/* 🔐 લૉગિન બોક્સ: સ્ક્રીનની બરાબર વચ્ચે લૉક અને સ્થિર */
 .login-container {
     display: flex;
     align-items: center;
@@ -39,11 +39,13 @@ body {
     top: 0;
     left: 0;
     z-index: 9999;
+    overflow: hidden; /* લૉગિન વખતે પેજ સહેજ પણ હલશે નહીં */
+    touch-action: none; /* ટચ કરવાથી પણ પેજ ઉપર-નીચે નહીં થાય */
 }
 
 #loginBox {
     width: 100%;
-    max-width: 320px; /* ફોન માટે એકદમ પરફેક્ટ ચોરસ સાઇઝ */
+    max-width: 320px;
     padding: 25px;
     background: #1e293b;
     border-radius: 12px;
@@ -67,7 +69,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* ☰ મોબાઇલ મેનુ બટન (શરૂઆતમાં છુપાયેલું રહેશે, મોબાઇલમાં જ દેખાશે) */
+/* ☰ મોબાઇલ મેનુ બટન */
 .menu-toggle {
     display: none;
     position: fixed;
@@ -91,7 +93,7 @@ body {
     background: #111827;
     padding: 20px;
     height: 100vh;
-    transition: transform 0.3s ease; /* સ્લાઇડિંગ ઇફેક્ટ માટે */
+    transition: transform 0.3s ease-in-out; /* બહાર આવવા અને અંદર જવાની સ્મૂધ ઇફેક્ટ */
 }
 
 .sidebar h2 {
@@ -123,7 +125,7 @@ body {
     flex: 1;
     padding: 30px;
     height: 100vh;
-    overflow-y: auto; /* અંદરનું કન્ટેન્ટ જ માત્ર સ્ક્રોલ થશે */
+    overflow-y: auto; /* ફક્ત કન્ટેન્ટ સેક્શન જ જરૂર પડે તો ઉપર-નીચે સ્ક્રોલ થશે */
     width: 100%;
 }
 
@@ -167,36 +169,35 @@ button.action-btn {
     font-size: 14px;
 }
 
-/* 📱 ખાસ મોબાઇલ સ્ક્રીન માટે (Responsive CSS) */
+/* 📱 ખાસ મોબાઇલ સ્ક્રીન માટે ફિક્સિંગ (Responsive) */
 @media (max-width: 768px) {
-    /* મેનુ બટન ચાલુ કરો */
     .menu-toggle {
-        display: block;
+        display: block; /* મોબાઇલમાં મેનુ બટન દેખાશે */
     }
 
-    /* સાઇડબારને ડાબી બાજુ સ્ક્રીનની બહાર છુપાવી દો */
+    /* સાઇડબાર શરૂઆતમાં સ્ક્રીનની બહાર ડાબી બાજુ છુપાયેલો રહેશે */
     .sidebar {
         position: fixed;
         top: 0;
         left: 0;
         height: 100vh;
         z-index: 998;
-        transform: translateX(-100%); /* ડાબી બાજુ છુપાઈ જશે */
+        transform: translateX(-100%); 
         box-shadow: 5px 0 15px rgba(0,0,0,0.5);
     }
 
-    /* જ્યારે મેનુ ઓપન થાય ત્યારે સાઇડબાર બહાર આવશે */
+    /* જ્યારે મેનુ બટન દબાવો ત્યારે 'open' ક્લાસ ઉમેરાશે અને સાઇડબાર બહાર આવશે */
     .sidebar.open {
         transform: translateX(0);
     }
 
     .content {
         padding: 20px;
-        padding-top: 75px; /* મેનુ બટનની નીચેથી કન્ટેન્ટ શરૂ થાય તે માટે */
+        padding-top: 75px; /* મેનુ બટનની નીચેથી બરાબર જગ્યા આપવા માટે */
     }
 
     input, select, button.action-btn {
-        max-width: 100%; /* ફોનમાં આખી સ્ક્રીન જેટલા સેટ થઈ જશે */
+        max-width: 100%; /* ફોનમાં કન્ટેન્ટ પૂરી સ્ક્રીન પર ફિટ થશે */
     }
 }
 </style>
@@ -204,7 +205,7 @@ button.action-btn {
 
 <body>
 
-<!-- લોગિન સેક્શન (સ્ક્રીન પર લોક રહેશે) -->
+<!-- લોગિન સેક્શન (એકદમ લૉક રહેશે) -->
 <div class="login-container" id="loginWrapper">
     <div id="loginBox">
         <h1>🔐 Admin Login</h1>
@@ -279,7 +280,7 @@ function adminLogin(){
         localStorage.setItem("adminLogin","true");
         document.getElementById("loginWrapper").style.display="none"; 
         
-        // લૉગિન સફળ થાય એટલે બાકીનું બધું બતાવો
+        // લૉગિન સફળ થાય ત્યારે બધું કન્ટેન્ટ ડિસ્પ્લે કરાવો
         document.getElementById("menuBtn").style.display="block";
         document.getElementById("sidebar").style.display="block";
         document.getElementById("contentArea").style.display="block";
@@ -288,18 +289,16 @@ function adminLogin(){
     }
 }
 
-// મેનુ ખોલવા અને બંધ કરવા માટે
+// મેનુ બટન દબાવવાથી સાઇડબાર બહાર આવશે/અંદર જશે
 function toggleMenu() {
     let sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("open");
 }
 
-// નવું મેવિગેશન ફંક્શન (ઓપ્શન સિલેક્ટ થતા જ મોબાઇલ સાઇડબાર બંધ થઈ જશે)
+// લિંક કે ઓપ્શન પર ક્લિક કરતા જ સાઇડબાર આપમેળે બંધ થઈ જશે
 function navigate(id) {
-    // સાઇડબાર બંધ કરો (મોબાઇલ માટે)
     document.getElementById("sidebar").classList.remove("open");
     
-    // નવી સેક્શન સ્ક્રીન બતાવો
     let sections = document.querySelectorAll(".section");
     sections.forEach(s => { s.classList.remove("active"); });
     document.getElementById(id).classList.add("active");
