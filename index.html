@@ -85,62 +85,23 @@ body {
     z-index: 999;
 }
 
-/* 💻 સાઇડબાર સેટિંગ્સ */
 .sidebar {
     width: 240px;
     min-width: 240px;
     background: #111827;
     padding: 20px;
     height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 998;
+    transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
 }
 
-.sidebar h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    margin-top: 10px;
+.sidebar.open {
+    transform: translateX(0);
 }
-
-.sidebar button {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #1e293b;
-    color: white;
-    font-size: 14px;
-    text-align: left;
-    padding-left: 15px;
-}
-
-.sidebar button:hover {
-    background: #2563eb;
-}
-
-/* કન્ટેન્ટ એરિયા */
-.content {
-    flex: 1;
-    padding: 30px;
-    height: 100vh;
-    overflow-y: auto;
-    width: 100%;
-}
-
-.section {
-    display: none;
-    background: #1e293b;
-    padding: 25px;
-    border-radius: 12px;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.section.active {
-    display: block;
-}
-
 /* ફોર્મ એલિમેન્ટ્સ */
 input, select {
     width: 100%;
@@ -282,6 +243,11 @@ function adminLogin(){
         // લૉગિન સક્સેસ થતા જ મેનુ, સાઇડબાર અને કન્ટેન્ટ દેખાશે
         document.getElementById("menuBtn").style.display="block";
         document.getElementById("sidebar").style.display="block";
+if (window.innerWidth > 768) {
+    document.getElementById("sidebar").classList.add("open");
+} else {
+    document.getElementById("sidebar").classList.remove("open");
+}
         document.getElementById("contentArea").style.display="block";
         
         // ખાતરી કરવી કે સાઇડબાર શરૂઆતમાં બંધ (છુપાયેલો) જ રહે
@@ -293,10 +259,14 @@ function adminLogin(){
 
 // મેનુ બટન દબાવવાથી સાઇડબાર સ્લાઇડ થઈને ખુલશે અને બંધ થશે
 function toggleMenu() {
-    let sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("open");
-}
+    const sidebar = document.getElementById("sidebar");
 
+    if (sidebar.classList.contains("open")) {
+        sidebar.classList.remove("open");
+    } else {
+        sidebar.classList.add("open");
+    }
+}
 // કોઈ પણ મેનુ ઓપ્શન દબાવતા જ સાઇડબાર તરત બંધ થઈ જશે અને સેક્શન બદલાશે
 function navigate(id) {
     document.getElementById("sidebar").classList.remove("open");
@@ -386,6 +356,32 @@ async function deleteKey(key){
     let data = await response.json();
     alert(data.message);
     loadKeys();
+}
+/* Mobile */
+@media (max-width:768px){
+
+    .menu-toggle{
+        display:block;
+    }
+
+    .sidebar{
+        position:fixed;
+        top:0;
+        left:0;
+        width:240px;
+        height:100vh;
+        z-index:998;
+        transform:translateX(-100%);
+        transition:transform .3s ease;
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .content{
+        padding-top:70px;
+    }
 }
 </script>
 
