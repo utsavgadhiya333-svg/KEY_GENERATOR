@@ -8,14 +8,14 @@
 <style>
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html, body {
-    margin: 0;
-    padding: 0;
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden; /* આખું પેજ લૉક રહેશે, આડું-અવળું હલશે નહીં */
     font-family: Arial, sans-serif;
     background: #0f172a;
     color: white;
@@ -26,17 +26,78 @@ body {
     flex-direction: row;
 }
 
-/* 💻 કમ્પ્યુટર માટે સાઇડબાર */
+/* 🔐 લૉગિન કન્ટેનર: એકદમ સેન્ટર અને ફિક્સ લૉક */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+    background: #0f172a;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+#loginBox {
+    width: 100%;
+    max-width: 320px; /* ફોન માટે એકદમ પરફેક્ટ ચોરસ સાઇઝ */
+    padding: 25px;
+    background: #1e293b;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+#loginBox h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+#loginBox input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #334155;
+    color: white;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* ☰ મોબાઇલ મેનુ બટન (શરૂઆતમાં છુપાયેલું રહેશે, મોબાઇલમાં જ દેખાશે) */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 999;
+}
+
+/* 💻 સાઇડબાર સેટિંગ્સ */
 .sidebar {
     width: 240px;
     min-width: 240px;
     background: #111827;
     padding: 20px;
+    height: 100vh;
+    transition: transform 0.3s ease; /* સ્લાઇડિંગ ઇફેક્ટ માટે */
 }
 
 .sidebar h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    margin-top: 10px;
 }
 
 .sidebar button {
@@ -46,16 +107,23 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: #2563eb;
+    background: #1e293b;
     color: white;
     font-size: 14px;
-    font-weight: bold;
+    text-align: left;
+    padding-left: 15px;
+}
+
+.sidebar button:hover {
+    background: #2563eb;
 }
 
 /* કન્ટેન્ટ એરિયા */
 .content {
     flex: 1;
     padding: 30px;
+    height: 100vh;
+    overflow-y: auto; /* અંદરનું કન્ટેન્ટ જ માત્ર સ્ક્રોલ થશે */
     width: 100%;
 }
 
@@ -65,12 +133,14 @@ body {
     padding: 25px;
     border-radius: 12px;
     width: 100%;
+    margin-top: 10px;
 }
 
-.active {
+.section.active {
     display: block;
 }
 
+/* ફોર્મ એલિમેન્ટ્સ */
 input, select {
     width: 100%;
     max-width: 350px;
@@ -80,8 +150,8 @@ input, select {
     background: #334155;
     color: white;
     font-size: 14px;
-    display: block;
     margin-bottom: 15px;
+    display: block;
 }
 
 button.action-btn {
@@ -97,74 +167,36 @@ button.action-btn {
     font-size: 14px;
 }
 
-/* 🔐 લોગિન કન્ટેનર: આખા પેજની વચ્ચે લાવવા માટે */
-.login-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100vh;
-    padding: 20px;
-}
-
-#loginBox {
-    width: 100%;
-    max-width: 360px;
-    padding: 30px;
-    background: #1e293b;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-#loginBox h1 {
-    margin-top: 0;
-    font-size: 24px;
-    margin-bottom: 25px;
-}
-
-#loginBox input, #loginBox button {
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* 📱 ફોનની સ્ક્રીન માટે (Mobile Responsive) */
+/* 📱 ખાસ મોબાઇલ સ્ક્રીન માટે (Responsive CSS) */
 @media (max-width: 768px) {
-    body {
-        flex-direction: column;
+    /* મેનુ બટન ચાલુ કરો */
+    .menu-toggle {
+        display: block;
     }
-    
+
+    /* સાઇડબારને ડાબી બાજુ સ્ક્રીનની બહાર છુપાવી દો */
     .sidebar {
-        width: 100%;
-        min-width: 100%;
-        height: auto;
-        padding: 15px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 998;
+        transform: translateX(-100%); /* ડાબી બાજુ છુપાઈ જશે */
+        box-shadow: 5px 0 15px rgba(0,0,0,0.5);
     }
-    
-    .sidebar h2 {
-        margin-bottom: 10px;
+
+    /* જ્યારે મેનુ ઓપન થાય ત્યારે સાઇડબાર બહાર આવશે */
+    .sidebar.open {
+        transform: translateX(0);
     }
-    
-    .sidebar button {
-        margin: 4px 0;
-        padding: 10px;
-    }
-    
+
     .content {
-        padding: 15px;
+        padding: 20px;
+        padding-top: 75px; /* મેનુ બટનની નીચેથી કન્ટેન્ટ શરૂ થાય તે માટે */
     }
-    
-    .section {
-        padding: 15px;
-    }
-    
+
     input, select, button.action-btn {
-        max-width: 100%;
-    }
-    
-    .login-container {
-        height: 100vh; /* લોગિન સ્ક્રીન ફોનમાં પણ બરાબર વચ્ચે જ રહેશે */
+        max-width: 100%; /* ફોનમાં આખી સ્ક્રીન જેટલા સેટ થઈ જશે */
     }
 }
 </style>
@@ -172,56 +204,64 @@ button.action-btn {
 
 <body>
 
-<!-- લોગિન બોક્સને વચ્ચે સેટ કરવા માટે આ કન્ટેનર ઉમેર્યું -->
+<!-- લોગિન સેક્શન (સ્ક્રીન પર લોક રહેશે) -->
 <div class="login-container" id="loginWrapper">
     <div id="loginBox">
         <h1>🔐 Admin Login</h1>
         <input id="adminUser" placeholder="Username">
         <input id="adminPass" type="password" placeholder="Password">
         <button class="action-btn" onclick="adminLogin()">Login</button>
-        <p id="loginMsg" style="margin-bottom: 0; color: #ef4444;"></p>
+        <p id="loginMsg" style="margin-top: 10px; margin-bottom: 0; color: #ef4444; font-size: 14px;"></p>
     </div>
 </div>
 
-<div class="sidebar" style="display:none;">
+<!-- મોબાઇલ મેનુ બટન (☰) -->
+<button class="menu-toggle" id="menuBtn" style="display:none;" onclick="toggleMenu()">☰ Menu</button>
+
+<!-- ડાબી બાજુનો સાઇડબાર -->
+<div class="sidebar" id="sidebar" style="display:none;">
     <h2>UTSAV</h2>
-    <button onclick="show('generate')">🔑 Key Generate</button>
-    <button onclick="show('info')">📋 Key Information</button>
-    <button onclick="show('activate')">🔐 Activation</button>
-    <button onclick="show('admin')">👤 Admin</button>
+    <button onclick="navigate('generate')">🔑 Key Generate</button>
+    <button onclick="navigate('info')">📋 Key Information</button>
+    <button onclick="navigate('activate')">🔐 Activation</button>
+    <button onclick="navigate('admin')">👤 Admin</button>
 </div>
 
-<div class="content" style="display:none;">
+<!-- મેઇન કન્ટેન્ટ એરિયા -->
+<div class="content" id="contentArea" style="display:none;">
     <div id="generate" class="section active">
         <h1>🔑 Key Generate</h1>
+        <br>
         <select id="plan">
             <option>1 Day</option>
             <option>7 Days</option>
             <option>15 Days</option>
             <option>Permanent</option>
         </select>
-        <br>
         <button class="action-btn" onclick="generateKey()">Generate Key</button>
-        <h3 id="newKey"></h3>
+        <h3 id="newKey" style="margin: 15px 0;"></h3>
         <button class="action-btn" style="background:#64748b;" onclick="copyNewKey()">📋 Copy Key</button>
     </div>
 
     <div id="info" class="section">
         <h1>📋 Key Information</h1>
+        <br>
         <button class="action-btn" onclick="loadKeys()">Refresh Keys</button>
         <div id="keyList"></div>
     </div>
 
     <div id="activate" class="section">
         <h1>🔐 Activate Key</h1>
+        <br>
         <input id="activeKey" placeholder="Enter Key">
         <input id="deviceId" placeholder="Enter Device ID">
         <button class="action-btn" onclick="activateKey()">Activate</button>
-        <h3 id="activateMsg"></h3>
+        <h3 id="activateMsg" style="margin-top: 15px;"></h3>
     </div>
 
     <div id="admin" class="section">
         <h1>👤 Admin Panel</h1>
+        <br>
         <div id="stats">Loading...</div>
         <br>
         <button class="action-btn" onclick="loadStats()">Refresh Stats</button>
@@ -237,15 +277,29 @@ function adminLogin(){
 
     if(user === "ugtm" && pass === "98751"){
         localStorage.setItem("adminLogin","true");
-        document.getElementById("loginWrapper").style.display="none"; // આખા કન્ટેનરને હટાવશે
-        document.querySelector(".sidebar").style.display="block";
-        document.querySelector(".content").style.display="block";
+        document.getElementById("loginWrapper").style.display="none"; 
+        
+        // લૉગિન સફળ થાય એટલે બાકીનું બધું બતાવો
+        document.getElementById("menuBtn").style.display="block";
+        document.getElementById("sidebar").style.display="block";
+        document.getElementById("contentArea").style.display="block";
     }else{
         document.getElementById("loginMsg").innerHTML = "Wrong Username or Password";
     }
 }
 
-function show(id){
+// મેનુ ખોલવા અને બંધ કરવા માટે
+function toggleMenu() {
+    let sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+}
+
+// નવું મેવિગેશન ફંક્શન (ઓપ્શન સિલેક્ટ થતા જ મોબાઇલ સાઇડબાર બંધ થઈ જશે)
+function navigate(id) {
+    // સાઇડબાર બંધ કરો (મોબાઇલ માટે)
+    document.getElementById("sidebar").classList.remove("open");
+    
+    // નવી સેક્શન સ્ક્રીન બતાવો
     let sections = document.querySelectorAll(".section");
     sections.forEach(s => { s.classList.remove("active"); });
     document.getElementById(id).classList.add("active");
@@ -282,13 +336,13 @@ async function loadKeys(){
     let html = "";
     data.keys.forEach(k => {
         html += `
-        <hr>
+        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #475569;">
         <p><b>Key:</b> ${k.key}</p>
         <p><b>Plan:</b> ${k.plan}</p>
         <p><b>Status:</b> ${k.status}</p>
         <p><b>Device:</b> ${k.device_id || "Not Used"}</p>
         <p><b>Expiry:</b> ${k.expires_at}</p>
-        <button class="action-btn" style="background:#ef4444; padding:5px 10px; font-size:12px; max-width: 120px;" onclick="deleteKey('${k.key}')">🗑️ Delete Key</button>
+        <button class="action-btn" style="background:#ef4444; margin-top:10px; padding:8px; font-size:12px; max-width: 120px;" onclick="deleteKey('${k.key}')">🗑️ Delete Key</button>
         `;
     });
     document.getElementById("keyList").innerHTML = html;
@@ -315,10 +369,10 @@ async function loadStats(){
     let disabled = data.keys.filter(k => k.status === "disabled").length;
 
     document.getElementById("stats").innerHTML = `
-    <h3>Total Keys: ${total}</h3>
-    <h3>Active Keys: ${active}</h3>
-    <h3>Unused Keys: ${unused}</h3>
-    <h3>Disabled Keys: ${disabled}</h3>
+    <h3 style="margin: 8px 0;">Total Keys: ${total}</h3>
+    <h3 style="margin: 8px 0;">Active Keys: ${active}</h3>
+    <h3 style="margin: 8px 0;">Unused Keys: ${unused}</h3>
+    <h3 style="margin: 8px 0;">Disabled Keys: ${disabled}</h3>
     `;
 }
 
