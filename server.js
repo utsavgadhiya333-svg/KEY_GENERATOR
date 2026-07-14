@@ -1,12 +1,16 @@
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
+const path = require("path"); // 👈 HTML ફાઇલનો પાથ સેટ કરવા માટે આ ઉમેર્યું છે
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// ૧. આ લાઇન સર્વરને તમારા ફોલ્ડરમાં રહેલી બધી ફાઇલો (HTML, CSS, JS) એક્સેસ કરવા દેશે
+app.use(express.static(path.join(__dirname))); 
 
 // Database
 const db = new sqlite3.Database("./database.db", (err) => {
@@ -30,12 +34,11 @@ CREATE TABLE IF NOT EXISTS keys (
 )
 `);
 
-// Test API
+// ૨. ટેસ્ટ API બદલીને અહીં utsav.html લોડ કરવાનું સેટ કર્યું
 app.get("/", (req, res) => {
-    res.send("✅ KEY GENERATOR SERVER RUNNING");
+    res.sendFile(path.join(__dirname, "utsav.html"));
 });
 
-// Start Server
 // Generate Key API
 app.post("/generate-key", (req, res) => {
 
@@ -77,6 +80,7 @@ app.post("/generate-key", (req, res) => {
     );
 
 });
+
 // Activate Key API
 app.post("/activate-key", (req, res) => {
 
@@ -131,7 +135,9 @@ app.post("/activate-key", (req, res) => {
         }
     );
 
-});// Get All Keys API
+});
+
+// Get All Keys API
 app.get("/all-keys", (req, res) => {
 
     db.all("SELECT * FROM keys ORDER BY id DESC", [], (err, rows) => {
@@ -151,6 +157,7 @@ app.get("/all-keys", (req, res) => {
     });
 
 });
+
 // Disable Key API
 app.post("/disable-key", (req, res) => {
 
@@ -177,6 +184,7 @@ app.post("/disable-key", (req, res) => {
     );
 
 });
+
 // Delete Key API
 app.post("/delete-key", (req, res) => {
 
@@ -203,6 +211,8 @@ app.post("/delete-key", (req, res) => {
     );
 
 });
+
+// Start Server
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`🚀 Server Running on port ${PORT}`);
 });
