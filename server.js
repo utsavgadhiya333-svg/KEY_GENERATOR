@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS keys (
 
 // ૨. ટેસ્ટ API બદલીને અહીં utsav.html લોડ કરવાનું સેટ કર્યું
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "utsav.html"));
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // Generate Key API
