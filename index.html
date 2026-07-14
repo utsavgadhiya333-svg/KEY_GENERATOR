@@ -15,7 +15,7 @@
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* આખું પેજ લૉક રહેશે, હલશે નહીં */
+    overflow: hidden; /* આખું પેજ લૉક રહેશે */
     font-family: Arial, sans-serif;
     background: #0f172a;
     color: white;
@@ -26,7 +26,7 @@ body {
     flex-direction: row;
 }
 
-/* 🔐 લૉગિન કન્ટેનર */
+/* 🔐 લૉગિન કન્ટેનર (સ્ક્રીનની વચ્ચે લૉક) */
 .login-container {
     display: flex;
     align-items: center;
@@ -141,7 +141,7 @@ body {
     display: block;
 }
 
-/* ਫੋਰਮ ਐਲੀਮੈਂਟਸ */
+/* ફોર્મ એલિમેન્ટ્સ */
 input, select {
     width: 100%;
     max-width: 350px;
@@ -168,13 +168,13 @@ button.action-btn {
     font-size: 14px;
 }
 
-/* 📱 મોબાઇલ સ્ક્રીન માટે ફિક્સ રિસ્પોન્સિવ (Sidebar hidden by default) */
+/* 📱 મોબાઇલ રિસ્પોન્સિવ (Sidebar hidden completely by default) */
 @media (max-width: 768px) {
     .menu-toggle {
-        display: block;
+        display: block; /* મોબાઇલમાં જ મેનુ બટન દેખાશે */
     }
 
-    /* મોબાઇલમાં સાઇડબાર ડિફોલ્ટ છુપાયેલો જ રહેશે (translateX -100%) */
+    /* સાઇડબાર શરૂઆતમાં બિલકુલ દેખાશે નહીં, સ્ક્રીનની ડાબી બાજુએ છુપાયેલો રહેશે */
     .sidebar {
         position: fixed;
         top: 0;
@@ -185,14 +185,14 @@ button.action-btn {
         box-shadow: 5px 0 15px rgba(0,0,0,0.5);
     }
 
-    /* જ્યારે મેનુ ઓપન થાય ત્યારે જ બહાર આવશે */
+    /* જ્યારે મેનુ બટન દબાવો અને 'open' ક્લાસ ઉમેરાય ત્યારે જ સ્લાઇડ થઈને બહાર આવશે */
     .sidebar.open {
-        transform: translateX(0) !important;
+        transform: translateX(0);
     }
 
     .content {
         padding: 20px;
-        padding-top: 75px;
+        padding-top: 75px; /* મેનુ બટન કન્ટેન્ટની આડે ન આવે તે માટે */
     }
 
     input, select, button.action-btn {
@@ -218,7 +218,7 @@ button.action-btn {
 <!-- મોબાઇલ મેનુ બટન (☰) -->
 <button class="menu-toggle" id="menuBtn" style="display:none;" onclick="toggleMenu()">☰ Menu</button>
 
-<!-- ડાબી બાજુનો સાઇડબાર (મોબાઇલમાં શરૂઆતમાં બહાર નહીં આવે) -->
+<!-- ડાબી બાજુનો સાઇડબાર (મોબાઇલમાં પહેલેથી છુપાયેલો રહેશે) -->
 <div class="sidebar" id="sidebar" style="display:none;">
     <h2>UTSAV</h2>
     <button onclick="navigate('generate')">🔑 Key Generate</button>
@@ -279,25 +279,26 @@ function adminLogin(){
         localStorage.setItem("adminLogin","true");
         document.getElementById("loginWrapper").style.display="none"; 
         
-        // લોગિન થતાં જ બધું દેખાશે પણ સાઇડબાર ક્લાસ મુજબ છુપાયેલો રહેશે
+        // લૉગિન સક્સેસ થતા જ મેનુ, સાઇડબાર અને કન્ટેન્ટ દેખાશે
         document.getElementById("menuBtn").style.display="block";
         document.getElementById("sidebar").style.display="block";
         document.getElementById("contentArea").style.display="block";
         
-        // ખાતરી કરવા માટે મોબાઇલમાં ઓપન ક્લાસ દૂર રાખવો
+        // ખાતરી કરવી કે સાઇડબાર શરૂઆતમાં બંધ (છુપાયેલો) જ રહે
         document.getElementById("sidebar").classList.remove("open");
     }else{
         document.getElementById("loginMsg").innerHTML = "Wrong Username or Password";
     }
 }
 
+// મેનુ બટન દબાવવાથી સાઇડબાર સ્લાઇડ થઈને ખુલશે અને બંધ થશે
 function toggleMenu() {
     let sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("open");
 }
 
+// કોઈ પણ મેનુ ઓપ્શન દબાવતા જ સાઇડબાર તરત બંધ થઈ જશે અને સેક્શન બદલાશે
 function navigate(id) {
-    // કોઈ પણ ઓપ્શન દબાવતા જ મેનુ પાછું અંદર જતું રહેશે
     document.getElementById("sidebar").classList.remove("open");
     
     let sections = document.querySelectorAll(".section");
