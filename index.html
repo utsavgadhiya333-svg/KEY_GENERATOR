@@ -11,7 +11,7 @@ body{
     background:#0f172a;
     color:white;
 }
-style="display:none;"
+
 .sidebar{
     width:220px;
     height:100vh;
@@ -33,7 +33,7 @@ style="display:none;"
     background:#2563eb;
     color:white;
 }
-style="display:none;"
+
 .content{
     flex:1;
     padding:30px;
@@ -169,7 +169,6 @@ Refresh Stats
 </button>
 
 </div>
-</div>
 
 
 <script>
@@ -213,7 +212,8 @@ async function generateKey(){
 
     let plan = document.getElementById("plan").value;
 
-    let response = await fetch("http://localhost:3000/generate-key",{
+    // 👈 અહીંથી http://localhost:3000 કાઢી નાખ્યું છે
+    let response = await fetch("/generate-key",{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
@@ -256,7 +256,8 @@ function copyNewKey(){
 }
 async function loadKeys(){
 
-    let response = await fetch("http://localhost:3000/all-keys");
+    // 👈 અહીંથી પણ localhost કાઢી નાખ્યું છે
+    let response = await fetch("/all-keys");
 
     let data = await response.json();
 
@@ -289,7 +290,8 @@ async function activateKey(){
     let device = document.getElementById("deviceId").value;
 
 
-    let response = await fetch("http://localhost:3000/activate-key",{
+    // 👈 અહીં પણ સુધારો કર્યો
+    let response = await fetch("/activate-key",{
 
         method:"POST",
 
@@ -313,7 +315,8 @@ async function activateKey(){
 }
 async function loadStats(){
 
-    let response = await fetch("http://localhost:3000/all-keys");
+    // 👈 અહીં પણ ઓનલાઇન પાથ સેટ કર્યો
+    let response = await fetch("/all-keys");
 
     let data = await response.json();
 
@@ -350,7 +353,8 @@ async function loadStats(){
 }
 async function deleteKey(key){
 
-    let response = await fetch("http://localhost:3000/delete-key",{
+    // 👈 અહીં પણ સાપેક્ષ લિંક કરી દીધી
+    let response = await fetch("/delete-key",{
 
         method:"POST",
 
